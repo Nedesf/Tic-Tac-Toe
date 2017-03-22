@@ -15,7 +15,6 @@ class Menu
     MenuState state;
     sf::IpAddress friendIp;
     unsigned short port;
-    bool host;
     unsigned short Width, Height;
     sf::RenderWindow Window;
 public:
@@ -29,6 +28,5 @@ public:
     void PreviousState();
     sf::IpAddress getIpAddress();
     unsigned short getPort();
-    bool isHost();
     void Draw();
 };

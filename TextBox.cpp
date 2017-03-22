@@ -53,7 +53,6 @@ void TextBox::EnterText(sf::RenderWindow &Window, std::string manual)
             }
             if ((event.text.unicode == '\b' && !(drawableText.getString().isEmpty() )) || !(manual.empty()))
             {
-                std::cout<<"do";
                 text.setString(textStr.erase(textStr.length()-1));
                 drawableText.setString(drawableTextStr.erase(drawableTextStr.length()-1));
                 while (look.getPosition().x + look.getSize().x > drawableText.getGlobalBounds().left + drawableText.getGlobalBounds().width && !(hiddenChars.empty()))

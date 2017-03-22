@@ -9,7 +9,6 @@ Menu::Menu(unsigned short w, unsigned short h)
     textTemplate.setFont(font);
     state = MAIN;
     port=42042;
-    host=true;
     LoadMainMenu();
     Window.create(sf::VideoMode(w, h), "Tic Tac Toe");
 }
@@ -47,18 +46,6 @@ void Menu::Update()
                     break;
                 case SETDEFAULT:
                     buttons[i].textBoxPtr->setToDefault(Window);
-                    break;
-                case ROLE:
-                    if (host)
-                    {
-                        host=false;
-                        buttons[i].setText("Client");
-                    }
-                    else
-                    {
-                        host=true;
-                        buttons[i].setText("Host");
-                    }
                     break;
                 }
                 buttons[i].resetClicked();
@@ -132,15 +119,10 @@ void Menu::LoadIpMenu()
     buttons[0].setType(ButtonType::SETDEFAULT);
     buttons[0].textBoxPtr = &textBoxes[1];
     buttons.push_back(Button());
-    buttons[1].setText("Host");
+    buttons[1].setText("Play!");
     buttons[1].setFont(font);
-    buttons[1].setPosition(sf::Vector2f(Width/2-buttons[1].getGlobalBounds().width/2, Height/2-buttons[1].getGlobalBounds().height/2), Width, Height);
-    buttons[1].setType(ButtonType::ROLE);
-    buttons.push_back(Button());
-    buttons[2].setText("Play!");
-    buttons[2].setFont(font);
-    buttons[2].setPosition(sf::Vector2f(Width/1.25-buttons[2].getGlobalBounds().width/2, Height/2-buttons[1].getGlobalBounds().height/2), Width, Height);
-    buttons[2].setType(ButtonType::START);
+    buttons[1].setPosition(sf::Vector2f(Width/1.25-buttons[1].getGlobalBounds().width/2, Height/2-buttons[1].getGlobalBounds().height/2), Width, Height);
+    buttons[1].setType(ButtonType::START);
 }
 void Menu::NextState()
 {
@@ -172,10 +154,6 @@ sf::IpAddress Menu::getIpAddress()
 unsigned short Menu::getPort()
 {
     return port;
-}
-bool Menu::isHost()
-{
-    return host;
 }
 void Menu::Draw()
 {

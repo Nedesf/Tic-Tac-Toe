@@ -1,5 +1,5 @@
-#ifndef PublicFuncsAndEnums_h
-#define PublicFuncsAndEnums_h
+#ifndef PUBLICFUNCSANDENUMS_H
+#define PUBLICFUNCSANDENUMS_H
 enum ButtonType
 {
     EXIT,
@@ -21,12 +21,17 @@ enum PlayerColor
     BLUE,
     PNULL
 };
+enum PlayerNumber
+{
+    Player1,
+    Player2
+};
 struct Score
 {
     int yourScore;
     int enemysScore;
 };
-PlayerColor convertToPlayerColor(TileState state)
+inline PlayerColor convertToPlayerColor(TileState state)
 {
     if(state == TileState::REDT)
         return PlayerColor::RED;
@@ -35,7 +40,7 @@ PlayerColor convertToPlayerColor(TileState state)
     else
         return PlayerColor::PNULL;
 }
-TileState convertToTileState(PlayerColor col)
+inline TileState convertToTileState(PlayerColor col)
 {
     if(col == PlayerColor::RED)
         return TileState::REDT;

@@ -1,6 +1,6 @@
 #include "Game.h"
-
-Game::Game(sf::IpAddress _ip, unsigned short _port, bool _host, unsigned short w, unsigned short h):
+#include <iostream>
+Game::Game(sf::IpAddress _ip, unsigned short _port, unsigned short w, unsigned short h):
     TimeStep(sf::seconds(1.f/60)),
     Width(w),
     Height(h),
@@ -10,24 +10,26 @@ Game::Game(sf::IpAddress _ip, unsigned short _port, bool _host, unsigned short w
     Height = h;
     friendIp = _ip;
     port = _port;
-    host = _host;
     socket.bind(port);
-    Window.create(sf::VideoMode(Width,Height),"Tic Tac Toe");
-    if(host)
+    srand(time(NULL));
+    short temp = rand()%2;
+    if(temp == 0)
+        player = PlayerNumber::Player1;
+    else
+        player = PlayerNumber::Player2;
+    Window.create(sf::VideoMode(Width, Height), "Tic Tac Toe");
+    color = PlayerColor::PNULL;
+    ConfigureNextRound();
+    if(player == PlayerNumber::Player1)
     {
         color = PlayerColor::RED;
         enemy = PlayerColor::BLUE;
-        Window.setTitle("HOST");
     }
     else
     {
         color = PlayerColor::BLUE;
         enemy = PlayerColor::RED;
     }
-    startingPlayer = PlayerColor::PNULL;
-    turn = PlayerColor::RED;
-    ConfigureNextRound();
-    startingPlayer = PlayerColor::RED;
 }
 
 void Game::Run()
@@ -62,7 +64,6 @@ void Game::HandleInputs()
         {
             Window.close();
             socket.unbind();
-            socket.close();
         }
     }
 }
@@ -73,9 +74,7 @@ void Game::Exchange()
     {
         socket.setBlocking(true);
         packet << lastMove.x << lastMove.y;
-        std::cout<<"Sending";
         socket.send(packet, friendIp, port);
-        std::cout<<"        Sent"<<std::endl;
         madeMove = false;
         turn = enemy;
     }
@@ -85,12 +84,8 @@ void Game::Exchange()
         socket.setBlocking(false);
         if(socket.receive(packet, friendIp, port) == sf::Socket::Done)
         {
-            std::cout<<"RECEIVED :P";
             packet >> temp1 >> temp2;
-            std::cout<<"TEST: "<<temp1<<", "<<temp2<<std::endl;
             level.getTile(temp1, temp2).setState(enemy);
-            if(enemy == PlayerColor::BLUE)
-                std::cout<<"Kolor niebieski ;p"<<std::endl;
             turn = color;
         }
     }
@@ -100,31 +95,36 @@ void Game::ConfigureNextRound()
     level.clear();
     lastMove = sf::Vector2f(-1,-1);
     madeMove = false;
-    if(startingPlayer == PlayerColor::RED)
+    if(color == PlayerColor::RED)
     {
-        startingPlayer = PlayerColor::BLUE;
-        turn = PlayerColor::BLUE;
+        color = PlayerColor::BLUE;
+        enemy = PlayerColor::RED;
     }
-    else
+    else if(color == PlayerColor::BLUE)
     {
-        startingPlayer = PlayerColor::RED;
-        turn = PlayerColor::RED;
+        color = PlayerColor::RED;
+        enemy = PlayerColor::BLUE;
     }
+    turn = PlayerColor::RED;
 }
 bool Game::isRoundOver()
 {
+    if(level.isFull())
+        return true;
     for(int i=0; i<3; i++)
     {
-        if(level.getTile(0, i).getState() == level.getTile(1, i).getState() == level.getTile(2, i).getState())
+        if((level.getTile(0, i).getState() != TileState::EMPTY) && (level.getTile(0, i).getState() == level.getTile(1, i).getState()) && (level.getTile(1, i).getState() == level.getTile(2, i).getState()))
         {
+            //std::cout<<"OS X";
             if(level.getTile(0,1) == color)
                 score.yourScore++;
             else
                 score.enemysScore++;
             return true;
         }
-        else if(level.getTile(i, 0).getState() == level.getTile(i, 1).getState() == level.getTile(i, 2).getState())
+        else if((level.getTile(i, 0).getState() != TileState::EMPTY) && (level.getTile(i, 0).getState() == level.getTile(i, 1).getState()) && (level.getTile(i, 1).getState() == level.getTile(i, 2).getState()))
         {
+            std::cout<<"OS Y";
             if(level.getTile(i, 0) == color)
                 score.yourScore++;
             else
@@ -132,6 +132,17 @@ bool Game::isRoundOver()
             return true;
         }
 
+    }
+    if(level.getTile(1, 1).getState() != TileState::EMPTY)
+    {
+        if(!((level.getTile(0, 0).getState() == level.getTile(1, 1).getState()) && (level.getTile(1, 1).getState() == level.getTile(2, 2).getState())))
+            if(!((level.getTile(2, 0).getState() == level.getTile(1, 1).getState()) && (level.getTile(1, 1).getState() == level.getTile(0, 2).getState())))
+                return false;
+        if(level.getTile(1, 1) == color)
+            score.yourScore++;
+        else
+            score.enemysScore++;
+        return true;
     }
     return false;
 }

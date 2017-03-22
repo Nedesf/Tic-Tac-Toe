@@ -7,11 +7,10 @@ class Game
     const sf::Time TimeStep;
     sf::IpAddress friendIp;
     unsigned short port;
-    bool host;
+    PlayerNumber player;
     PlayerColor color;
     PlayerColor enemy;
     PlayerColor turn;
-    PlayerColor startingPlayer;
     Score score;
     sf::UdpSocket socket;
     unsigned short Width, Height;
@@ -20,7 +19,7 @@ class Game
     bool madeMove;
     sf::Vector2f lastMove;
 public:
-    Game(sf::IpAddress, unsigned short, bool, unsigned short=640, unsigned short=480);
+    Game(sf::IpAddress, unsigned short, unsigned short=640, unsigned short=480);
     void Run();
     void Update();
     void HandleInputs();

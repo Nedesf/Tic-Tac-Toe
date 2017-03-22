@@ -26,7 +26,18 @@ void Level::Update(PlayerColor col, sf::RenderWindow &Window, PlayerColor &turn,
         }
     }
 }
-
+bool Level::isFull()
+{
+    for(int y=0; y<3; y++)
+    {
+        for(int x=0; x<3; x++)
+        {
+            if(tiles[x][y].getState() == TileState::EMPTY)
+                return false;
+        }
+    }
+    return true;
+}
 void Level::setTilesPositions(unsigned short width, unsigned short height)
 {
     for (int y=0; y<3; y++)
